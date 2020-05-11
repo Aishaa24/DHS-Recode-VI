@@ -18,7 +18,7 @@ macro drop _all
 
 //NOTE FOR WINDOWS USERS : use "/" instead of "\" in your paths
 
-global root "C:\Users\wb536558\OneDrive - WBG\Documents\DHS\MEASURE UHC DATA"
+global root "C:\Users\wb\OneDrive - WBG\Documents\DHS\MEASURE UHC DATA"
 
 * Define path for data sources
 global SOURCE "${root}/RAW DATA/Recode VI"
