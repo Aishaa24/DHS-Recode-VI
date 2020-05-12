@@ -27,38 +27,30 @@ order *,sequential  //make sure variables are in order.
 *c_diarrhea_hmf	Child with diarrhea received recommended home-made fluids
         gen c_diarrhea_hmf=(h14  ==1|h14  ==2) if c_diarrhea == 1			/* home made fluid for diarrhea*/
 		replace c_diarrhea_hmf=. if h14  ==8|h14  ==9 | h14  ==. 
-		
-*c_diarrhea_pro	The treatment was provided by a formal provider (all public provider except other public, pharmacy, and private sector)
-       /*please cross check as there might be case where the diarreha treatment provider is not in h12a-h12x*/
-	    order h12a-h12x,sequential
-	    foreach var of varlist h12a-h12x{
-	    local lab: variable label `var' 	   
-        replace `var' = . if ///
-	    regexm("`lab'","( other|shop|pharmacy|market|kiosk|relative|friend|church|drug|addo|rescuer|trad|unqualified|stand|cabinet|ayush|^na)") ///
-	    & !regexm("`lab'","(ngo|hospital|medical center|worker)")  
-	    replace `var' = . if !inlist(`var',0,1) 
-	    }
-	    egen pro_dia = rowtotal(h12a-h12x),mi
 
-        gen c_diarrhea_pro = 0 if c_diarrhea == 1
-        replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & pro_dia >= 1 
-        replace c_diarrhea_pro = . if pro_dia == . 	
-	   
-	   /*for countries below there are categories that identified as formal 
-	   provider but not shown in the label*/
-	    if inlist(name,"Senegal2014","Senegal2012","Senegal2015"){
-			foreach x in a b c d e g h j l m n p q {
-            replace c_diarrhea_pro=1 if c_diarrhea==1 & h12`x'==1
-            replace c_diarrhea_pro=. if c_diarrhea==1 & h12`x'==9			
-			}
-			}
+*c_diarrhea_pro	The treatment was provided by a formal provider (all public provider except other public, pharmacy, and private sector)
+
+	gen c_diarrhea_pro = 0 if c_diarrhea == 1
+		
+		if inlist(name,"Armenia2010") {
+			global h12 "h12a h12b h12c h12d h12e h12f h12g h12j h12l h12m h12n h12o h12p h12r h12z"
+		}
 			
-	    if inlist(name,"Senegal2010") {
- 			foreach x in a b c d e j l m n {
-            replace c_diarrhea_pro=1 if c_diarrhea==1 & h12`x'==1
-            replace c_diarrhea_pro=. if c_diarrhea==1 & h12`x'==9			
-			}
-			}		
+		foreach var in $h12  {
+			replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & `var' == 1 
+			replace c_diarrhea_pro = . if `var' == 8 
+		}
+		
+		
+		if inlist(name,"Bangladesh2011") {
+			global h12 "h12a h12b h12c h12d h12e h12f h12g h12h h12j h12l  h12n h12o h12s h12t  h12r h12z"
+		}
+			
+		foreach var in $h12  {
+			replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & `var' == 1 
+			replace c_diarrhea_pro = . if `var' == 8 
+		}	
+	
 		
 *c_diarrhea_mof	Child with diarrhea received more fluids
         gen c_diarrhea_mof = (h38 == 5) if !inlist(h38,.,8) & c_diarrhea == 1
