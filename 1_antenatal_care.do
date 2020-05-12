@@ -17,7 +17,7 @@ order *,sequential
 	*c_anc_ear: First antenatal care visit in first trimester of pregnancy of births in last 2 years
 	gen c_anc_ear = 0 if m2n != .    // m13 based on Women who had seen someone for antenatal care for their last born child
 	replace c_anc_ear = 1 if inrange(m13,0,3)
-	replace c_anc_ear = . if m13 == 98 
+	replace c_anc_ear = . if m13 == 98 | m13 == .
 	
 	*c_anc_ear_q: First antenatal care visit in first trimester of pregnancy among ANC users of births in last 2 years
 	gen c_anc_ear_q = .
