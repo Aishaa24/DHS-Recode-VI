@@ -32,7 +32,7 @@ order *,sequential
 	
 	if inlist(name, "Bangladesh2011") {
 	mdesc m2a-m2m
-	egen anc_skill = rowtotal(m2a m2c m2d m2e m2f),mi
+	egen anc_skill = rowtotal(m2a m2b m2c m2d m2e m2f),mi
 	}
 	
 	*c_anc_eff: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) of births in last 2 years
