@@ -33,7 +33,7 @@
     clonevar hhwealthscore_old = hv271
     egen hhwealthscore_oldmin=min(hhwealthscore_old) 
     gen hh_wealthscore=hhwealthscore_old-hhwealthscore_oldmin
-    replace hh_wealthscore=hhwealthscore/1000000
+    replace hh_wealthscore=hh_wealthscore/1000000
 	 
 
 *hv001 Sampling cluster number (original)
