@@ -30,7 +30,8 @@ order *,sequential
 	egen anc_skill = rowtotal(m2a m2c m2d m2e m2f m2i),mi
 	}
 	
-	if inlist(name, "Bangladesh2011") {
+	*anc_skill: Categories as skilled: doctor, nurse, midwife, paramedic, family welfare assistant, community skilled birth attendants, and MA/SACMO
+	if inlist(name, "Bangladesh2011", "Bangladesh2014") {
 	mdesc m2a-m2m
 	egen anc_skill = rowtotal(m2a m2b m2c m2d m2e m2f),mi
 	}
@@ -91,7 +92,7 @@ order *,sequential
 	gen c_anc_ir = inlist(anc_ir,1) if  !mi(anc_ir)
 	}
 	
-	if inlist(name, "Bangladesh2011") {
+	if inlist(name, "Bangladesh2011", "Bangladesh2014") {
 	replace m45=. if inlist(m45,8,9)
 	replace h42=. if inlist(h42,8,9)
 	gen anc_ir = h42
@@ -106,12 +107,16 @@ order *,sequential
 	    
 	    gen tet2lastp = 0                                                                                   //follow the definition by report. might be country specific. 
         replace tet2lastp = 1 if m1 >1 & m1<8
+		replace tet2lastp=. if m1==.
+		
 	
 	    * temporary vars needed to compute the indicator
 	    gen totet = 0 
 	    gen ttprotect = 0 				   
 	    replace totet = m1 if (m1>0 & m1<8)
 	    replace totet = m1a + totet if (m1a > 0 & m1a < 8)
+		replace totet=. if m1==.
+		
 				   
 	    *now generating variable for date of last injection - will be 0 for women with at least 1 injection at last pregnancy
         g lastinj = 9999
@@ -150,6 +155,5 @@ order *,sequential
 	*c_anc_eff3_q: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples, tetanus vaccination, start in first trimester) among ANC users of births in last 2 years
     gen c_anc_eff3_q = (c_anc == 1 & anc_skill>0 & anc_blood == 3 & rh_anc_neotet == 1 & inrange(m13,0,3)) if c_anc_any == 1
 	replace c_anc_eff3_q = . if (c_anc == . | anc_skill == . | anc_blood == . | rh_anc_neotet == . ) & c_anc_any == 1
-	
 
 	
