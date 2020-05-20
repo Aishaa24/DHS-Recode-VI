@@ -83,21 +83,9 @@ order *,sequential
 	replace c_anc_ur_q = . if mi(c_anc_ur) & c_anc_any == 1 
 	
 	*c_anc_ir: iron supplements taken during pregnancy of births in last 2 years
+	clonevar c_anc_ir = m45
+	replace c_anc_ir = . if m45 == 8
 
-	
-	if inlist(name, "Armenia2010") {
-	replace m45=. if inlist(m45,8,9)
-	replace h42=. if inlist(h42,8,9)
-	gen anc_ir = m45
-	gen c_anc_ir = inlist(anc_ir,1) if  !mi(anc_ir)
-	}
-	
-	if inlist(name, "Bangladesh2011", "Bangladesh2014") {
-	replace m45=. if inlist(m45,8,9)
-	replace h42=. if inlist(h42,8,9)
-	gen anc_ir = h42
-	gen c_anc_ir = inlist(anc_ir,1) if  !mi(anc_ir)
-	}
 	
 	*c_anc_ir_q: iron supplements taken during pregnancy among ANC users of births in last 2 years
 	gen c_anc_ir_q = (c_anc_ir == 1 ) if c_anc_any == 1 
