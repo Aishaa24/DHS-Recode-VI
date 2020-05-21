@@ -28,6 +28,20 @@ order *,sequential  //make sure variables are in order.
 	egen sba_skill = rowtotal(m3a m3b m3c m3d m3e m3f),mi
 	}
 	
+	if inlist(name, "Benin2011"){
+	foreach var of varlist m3a-m3b{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b),mi
+	}
+	
+	if inlist(name, "BurkinaFaso2010"){
+	foreach var of varlist m3a m3b m3c m3d m3e{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3c m3d m3e),mi
+	}
+	
 	*c_hospdel: child born in hospital of births in last 2 years  
 	decode m15, gen(m15_lab)
 	replace m15_lab = lower(m15_lab)
@@ -54,8 +68,8 @@ order *,sequential  //make sure variables are in order.
 	
     *c_skin2skin: child placed on mother's bare skin immediately after birth of births in last 2 years
 	
-	if inlist(name, "Armenia2010"){
-	gen c_skin2skin = (s433a  == 1) if   !inlist(s433a,.) 
+	if inlist(name, "Armenia2010", "Benin2011", "BurkinaFaso2010"){
+	gen c_skin2skin =.
 	}
 
 	if inlist(name, "Bangladesh2011"){
@@ -80,7 +94,7 @@ order *,sequential  //make sure variables are in order.
 	replace c_caesarean =. if m17==9
 	
     *c_sba_eff1: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth)
-	if inlist(name, "Armenia2010"){
+	if inlist(name, "Armenia2010", "BurkinaFaso2010"){
 	gen stay = (inrange(m61,124,198)|inrange(m61,201,298)|inrange(m61,301,398))  
 	replace stay = . if mi(m61) | inlist(m61,199,299,998)
 	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
@@ -97,6 +111,13 @@ order *,sequential  //make sure variables are in order.
 	if inlist(name, "Bangladesh2014"){
 	gen stay = (inlist(m61,124) | inrange(m61,201,224)|inrange(m61,301,308))  
 	replace stay = . if mi(m61) | inlist(m61,998)
+	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
+	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
+	}	
+	
+	if inlist(name, "Benin2011"){
+	gen stay = (inrange(m61,124,188) | inrange(m61,201,290)|inrange(m61,301,312))  
+	replace stay = . if mi(m61) | inlist(m61,999)
 	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
 	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
 	}	
