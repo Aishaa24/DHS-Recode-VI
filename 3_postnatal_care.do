@@ -2,9 +2,9 @@
 ***Postnatal Care************* 
 *****************************
 
-*c_pnc_skill: m52,m72 by var label text. (m52 is added in Recode VI.
-	gen m52_skill =  0 if !mi(m52)
-	gen m72_skill =  0 if !mi(m72)
+*c_pnc_skill: m52,m72 by var label text. (m52 is added in Recode VI.-
+    gen m52_skill = 0 if !mi(m52) | !inlist(m50,0,1) 
+	gen m72_skill = 0 if !mi(m72) | !inlist(m70,0,1) 
 	
 	foreach var of varlist m52 m72 {
     decode `var', gen(`var'_lab)
@@ -12,13 +12,14 @@
 	replace  `var'_skill= 1 if ///
 	(regexm(`var'_lab,"doctor|nurse|midwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|trained|auxiliary birth attendant|physician assistant|professional|ferdsher|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant") ///
 	&!regexm(`var'_lab,"na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife|other")) 
-	replace `var'_skill = . if mi(`var') | `var' == 99
+	replace `var'_skill = . if mi(`var') | `var' == 99 | mi(`var'_lab)
 	}
+	
 	/* consider as skilled if contain words in 
 	   the first group but don't contain any words in the second group */
-	
 	*c_pnc_any : mother OR child receive PNC in first six weeks by skilled health worker
-    gen c_pnc_any = 0 if !mi(m70) & !mi(m50) 
+    gen c_pnc_any =.
+	replace c_pnc_any=0 if !mi(m70) & !mi(m50) 
     replace c_pnc_any = 1 if (m71 <= 306 & m72_skill == 1 ) | (m51 <= 306 & m52_skill == 1)
     replace c_pnc_any = . if inlist(m71,199,299,399,998)| inlist(m51,998)| m72_skill == . | m52_skill == .
 	
