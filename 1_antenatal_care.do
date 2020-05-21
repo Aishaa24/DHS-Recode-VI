@@ -19,6 +19,13 @@ order *,sequential
 	replace c_anc_ear = 1 if inrange(m13,0,3)
 	replace c_anc_ear = . if m13 == 98 | m13 == .
 	
+	if inlist(name,"BurkinaFaso2010"){
+	drop c_anc_ear
+	gen c_anc_ear =  1 if inrange(m13,0,3)
+	replace c_anc_ear = 0 if !inrange(m13,0,3)
+	replace c_anc_ear = . if m13 == 98 | m13 == .
+	}
+	
 	*c_anc_ear_q: First antenatal care visit in first trimester of pregnancy among ANC users of births in last 2 years
 	gen c_anc_ear_q = .
 	replace c_anc_ear_q = 1 if c_anc_ear == 1 & c_anc_any == 1
@@ -35,6 +42,18 @@ order *,sequential
 	mdesc m2a-m2m
 	egen anc_skill = rowtotal(m2a m2b m2c m2d m2e m2f),mi
 	}
+	
+	*anc_skill: Categories as skilled: doctor, nurse, midwife, auxiliary nurse/midwife...
+	if inlist(name, "Benin2011") {
+	mdesc m2a-m2m
+	egen anc_skill = rowtotal(m2a m2b),mi
+	}	
+	
+   *anc_skill: Categories as skilled: doctor, nurse, midwife, auxiliary, birth attendants, and trained birth attendants...
+	if inlist(name, "BurkinaFaso2010") {
+	mdesc m2a-m2m
+	egen anc_skill = rowtotal(m2a m2b m2c m2d m2e m2g),mi
+	}	
 	
 	*c_anc_eff: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) of births in last 2 years
 	egen anc_blood = rowtotal(m42c m42d m42e),mi
@@ -59,7 +78,14 @@ order *,sequential
 	gen c_anc_bp = .
 	replace c_anc_bp = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_bp = 1 if m42c==1
-	
+		
+	if inlist(name,"BurkinaFaso2010"){
+	drop c_anc_bp
+	gen c_anc_bp = inlist(m42c,1)
+	replace c_anc_bp = 0 if m42c==0
+	replace c_anc_bp = . if m42c==.
+	}
+
 	*c_anc_bp_q: Blood pressure measured during pregnancy among ANC users of births in last 2 years
 	gen c_anc_bp_q = (c_anc_bp==1) if c_anc_any == 1 
 	replace c_anc_bp_q = . if mi(c_anc_bp) & c_anc_any == 1 
@@ -69,8 +95,16 @@ order *,sequential
 	replace c_anc_bs = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_bs = 1 if m42e==1
 	
+	if inlist(name,"BurkinaFaso2010"){
+	drop c_anc_bs
+	gen c_anc_bs = inlist(m42e,1)
+	replace c_anc_bs = 0 if m42e==0
+	replace c_anc_bs = . if m42e==.
+	}
+	
 	*c_anc_bs_q: Blood sample taken during pregnancy among ANC users of births in last 2 years
 	gen c_anc_bs_q = (c_anc_bs==1) if c_anc_any == 1 
+	replace c_anc_bs_q = 0 if c_anc_bs==0
 	replace c_anc_bs_q = . if c_anc_bs == . & c_anc_any == 1
 	
 	*c_anc_ur: Urine sample taken during pregnancy of births in last 2 years
@@ -78,27 +112,23 @@ order *,sequential
 	replace c_anc_ur = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_ur = 1 if m42d==1
 	
+	if inlist(name,"BurkinaFaso2010"){
+	drop c_anc_ur
+	gen c_anc_ur = inlist(m42d,1)
+	replace c_anc_ur = 0 if m42d==0
+	replace c_anc_ur = . if m42d==.
+	}
+	
 	*c_anc_ur_q: Urine sample taken during pregnancy among ANC users of births in last 2 years
 	gen c_anc_ur_q = (c_anc_ur==1) if c_anc_any == 1 
 	replace c_anc_ur_q = . if mi(c_anc_ur) & c_anc_any == 1 
 	
 	*c_anc_ir: iron supplements taken during pregnancy of births in last 2 years
 
-	
-	if inlist(name, "Armenia2010") {
 	replace m45=. if inlist(m45,8,9)
-	replace h42=. if inlist(h42,8,9)
 	gen anc_ir = m45
 	gen c_anc_ir = inlist(anc_ir,1) if  !mi(anc_ir)
-	}
-	
-	if inlist(name, "Bangladesh2011", "Bangladesh2014") {
-	replace m45=. if inlist(m45,8,9)
-	replace h42=. if inlist(h42,8,9)
-	gen anc_ir = h42
-	gen c_anc_ir = inlist(anc_ir,1) if  !mi(anc_ir)
-	}
-	
+
 	*c_anc_ir_q: iron supplements taken during pregnancy among ANC users of births in last 2 years
 	gen c_anc_ir_q = (c_anc_ir == 1 ) if c_anc_any == 1 
 	replace c_anc_ir_q = . if c_anc_any == 1 & mi(anc_ir)
@@ -155,5 +185,6 @@ order *,sequential
 	*c_anc_eff3_q: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples, tetanus vaccination, start in first trimester) among ANC users of births in last 2 years
     gen c_anc_eff3_q = (c_anc == 1 & anc_skill>0 & anc_blood == 3 & rh_anc_neotet == 1 & inrange(m13,0,3)) if c_anc_any == 1
 	replace c_anc_eff3_q = . if (c_anc == . | anc_skill == . | anc_blood == . | rh_anc_neotet == . ) & c_anc_any == 1
+	
 
 	
