@@ -36,11 +36,9 @@ global DO "${root}/STATA/DO/SC/DHS/Recode VI"
 do "${DO}/0_GLOBAL.do"
 
 
-*foreach name in $DHScountries_Recode_VI{	
+foreach name in $DHScountries_Recode_VI{	
 
 tempfile birth ind men hm hiv hh iso 
-
-local name "Bangladesh2011"
 
 ******************************
 *****domains using birth data*
