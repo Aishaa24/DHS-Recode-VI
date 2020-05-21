@@ -1,4 +1,4 @@
-**************************
+***************************
 *** Child illness ********
 **************************   
 	   	
@@ -13,7 +13,7 @@ rename *,lower   //make lables all lowercase.
 order *,sequential  //make sure variables are in order. 
 
 *c_diarrhea Child with diarrhea in last 2 weeks
-	    gen c_diarrhea=(h11   ==1|h11   ==2) 						/*symptoms in last two weeks*/
+	    gen c_diarrhea=(h11 ==2| h11 ==2) 						/*symptoms in last two weeks*/
 		replace c_diarrhea=. if h11   ==8|h11  ==9|h11  ==. 
 					 
 		gen ccough=(h31  ==1|h31  ==2) 
@@ -25,9 +25,9 @@ order *,sequential  //make sure variables are in order.
 		replace c_treatdiarrhea=. if (h13  ==8|h13  ==9 | h13  ==.)&(h13b  ==8|h13b  ==9 | h13b  ==.) 
 		
 *c_diarrhea_hmf	Child with diarrhea received recommended home-made fluids
-        gen c_diarrhea_hmf=(h14  ==1|h14  ==2) if c_diarrhea == 1			/* home made fluid for diarrhea*/
-		replace c_diarrhea_hmf=. if h14  ==8|h14  ==9 | h14  ==. 
-		
+        gen c_diarrhea_hmf=(h14 ==1 | h14  ==2) if c_diarrhea == 1			/* home made fluid for diarrhea*/
+		replace c_diarrhea_hmf=. if h14  ==8| h14  ==9 | h14  ==. 
+	
 *c_diarrhea_pro	The treatment was provided by a formal provider (all public provider except other public, pharmacy, and private sector)
 
 	gen c_diarrhea_pro = 0 if c_diarrhea == 1
@@ -51,13 +51,34 @@ order *,sequential  //make sure variables are in order.
 		}		
 		
 		if inlist(name,"Bangladesh2014") {
-			global h12 "h12a h12b h12c h12d h12e h12f h12g h12j h12l  h12n h12o h12s h12t h12z"
+			global h12 "h12a h12b h12c h12d h12e h12f h12g h12j h12l  h12n h12o h12s h12t h12u h12z"
+		}
+			
+		foreach var in $h12  {
+			replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & `var' == 1 
+			replace c_diarrhea_pro = . if `var' == 8 
+		}
+		
+		if inlist(name,"Benin2011") {
+			global h12 "h12a h12b h12c h12d h12e h12f h12g h12j h12l h12m h12n h12o h12z"
 		}
 			
 		foreach var in $h12  {
 			replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & `var' == 1 
 			replace c_diarrhea_pro = . if `var' == 8 
 		}		
+			
+		
+		if inlist(name,"BurkinaFaso2010") {
+			global h12 "h12a h12b h12c h12d h12j h12l h12m h12s h12z"
+		}
+			
+		foreach var in $h12  {
+			replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & `var' == 1 
+			replace c_diarrhea_pro = . if `var' == 8 
+		}	
+		
+		
 *c_diarrhea_mof	Child with diarrhea received more fluids
         gen c_diarrhea_mof = (h38 == 5) if !inlist(h38,.,8) & c_diarrhea == 1
 
@@ -127,24 +148,18 @@ order *,sequential  //make sure variables are in order.
 			global h32 "h32b h32c h32d h32e h32f h32g h32h h32j h32l h32o h32s h32o h32z"
 		}	
 		
- egen pro_ari = rowtotal(h32a-h32z),mi
- 
+		if inlist(name,"BurkinaFaso2010") {
+		global h32 " h32a h32b h32c h32d h32j h32l h32m h32s h32z"
+		}	
+	
 		foreach var in $h32 {
 			replace c_treatARI = 1 if c_treatARI == 0 & `var' == 1 
 			replace c_treatARI = . if `var' == 8 | c_ari != 1
 			
 			replace c_treatARI2 = 1 if c_treatARI2 == 0 & `var' == 1 
-			replace c_treatARI2 = . if `var' == 8 | c_ari2 != 1
-			
+			replace c_treatARI2 = . if `var' == 8 | c_ari2 != 1	
 		}	
-		
-		
-	    foreach var of varlist c_treatARI c_treatARI2 {
-        replace `var' = 1 if `var' == 0 & pro_ari >= 1 
-        replace `var'  = . if pro_ari == . 	
-		}	
-		
-
+	
 *c_fevertreat	Child with fever symptoms seen by formal provider			      
           
 	    gen c_fevertreat = 0 if c_fever == 1
