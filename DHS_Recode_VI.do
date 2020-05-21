@@ -36,9 +36,11 @@ global DO "${root}/STATA/DO/SC/DHS/Recode VI"
 do "${DO}/0_GLOBAL.do"
 
 
-foreach name in $DHScountries_Recode_VI{	
+*foreach name in $DHScountries_Recode_VI{	
 
 tempfile birth ind men hm hiv hh iso 
+
+local name "Bangladesh2011"
 
 ******************************
 *****domains using birth data*
@@ -56,6 +58,7 @@ use "${SOURCE}/DHS-`name'/DHS-`name'birth.dta", clear
     do "${DO}/10_child_mortality"
     do "${DO}/11_child_other"
 	
+
 
 *housekeeping for birthdata
    //generate the demographics for child who are dead or no longer living in the hh. 
@@ -145,7 +148,6 @@ use "${SOURCE}/DHS-`name'/DHS-`name'hm.dta", clear
     merge 1:m v001 v002 v003 using "${SOURCE}/DHS-`name'/DHS-`name'birth.dta"
     rename (v001 v002 v003) (hv001 hv002 hvidx) 
     drop _merge
-
     do "${DO}/15_household"
 
 keep hv001 hv002 hv003 hh_* 
@@ -186,10 +188,16 @@ use `hm',clear
 gen surveyid = iso2c+year+"DHS"
 gen name = "`name'"
     
+	if inlist(name,"BurkinaFaso2010") {
+	rename  surveyid  SurveyId
+	gen surveyname= "BF"
+	egen surveyid = concat(surveyname SurveyId )
+	}
+
 	preserve
 	do "${DO}/Quality_control"
 	save "${INTER}/quality_control-`name'",replace
-	xx
+
     restore 
 	
 *** Specify sample size to HEFPI
@@ -237,4 +245,5 @@ gen name = "`name'"
     do "${DO}/Label_var"
 	
 save "${OUT}/DHS-`name'.dta", replace  
+
 }
