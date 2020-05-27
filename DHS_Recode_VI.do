@@ -36,11 +36,9 @@ global DO "${root}/STATA/DO/SC/DHS/Recode VI"
 do "${DO}/0_GLOBAL.do"
 
 
-*foreach name in $DHScountries_Recode_VI{	
+foreach name in $DHScountries_Recode_VI{	
 
 tempfile birth ind men hm hiv hh iso 
-
-local name "Burundi2010"
 
 ******************************
 *****domains using birth data*
@@ -204,8 +202,7 @@ gen name = "`name'"
 	preserve
 	do "${DO}/Quality_control"
 	save "${INTER}/quality_control-`name'",replace
-	xx
-    restore 
+        restore 
 
 	
 *** Specify sample size to HEFPI
