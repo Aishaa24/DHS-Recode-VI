@@ -18,7 +18,7 @@ macro drop _all
 
 //NOTE FOR WINDOWS USERS : use "/" instead of "\" in your paths
 
-global root "C:\Users\wb\OneDrive - WBG\Documents\DHS\MEASURE UHC DATA"
+global root "C:\Users\wb536558\OneDrive - WBG\Documents\DHS\MEASURE UHC DATA"
 
 * Define path for data sources
 global SOURCE "${root}/RAW DATA/Recode VI"
@@ -36,9 +36,11 @@ global DO "${root}/STATA/DO/SC/DHS/Recode VI"
 do "${DO}/0_GLOBAL.do"
 
 
-foreach name in $DHScountries_Recode_VI{	
+*foreach name in $DHScountries_Recode_VI{	
 
 tempfile birth ind men hm hiv hh iso 
+
+local name "Burundi2010"
 
 ******************************
 *****domains using birth data*
@@ -89,6 +91,7 @@ save `birth'
 use "${SOURCE}/DHS-`name'/DHS-`name'ind.dta", clear	
 gen name = "`name'"
 gen hm_age_yrs = v012
+
 
     do "${DO}/4_sexual_health"
     do "${DO}/5_woman_anthropometrics"
@@ -185,18 +188,25 @@ use `hm',clear
 *** Quality Control: Validate with DHS official data
 gen surveyid = iso2c+year+"DHS"
 gen name = "`name'"
-    
+  
 	if inlist(name,"BurkinaFaso2010") {
 	rename  surveyid  SurveyId
 	gen surveyname= "BF"
 	egen surveyid = concat(surveyname SurveyId )
 	}
+	
+	if inlist(name,"Burundi2010") {
+	rename surveyid SurveyId
+	gen surveyname= "BU"
+	gen surveyid = surveyname + year + "DHS"
+	}
 
 	preserve
 	do "${DO}/Quality_control"
 	save "${INTER}/quality_control-`name'",replace
-
+	xx
     restore 
+
 	
 *** Specify sample size to HEFPI
 	
