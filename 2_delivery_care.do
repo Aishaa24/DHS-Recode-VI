@@ -28,7 +28,7 @@ order *,sequential  //make sure variables are in order.
 	egen sba_skill = rowtotal(m3a m3b m3c m3d m3e m3f),mi
 	}
 	
-	if inlist(name, "Benin2011"){
+	if inlist(name, "Benin2011", "Burundi2010"){
 	foreach var of varlist m3a-m3b{
 	replace `var' = . if !inlist(`var',0,1)	
 	}
@@ -68,7 +68,7 @@ order *,sequential  //make sure variables are in order.
 	
     *c_skin2skin: child placed on mother's bare skin immediately after birth of births in last 2 years
 	
-	if inlist(name, "Armenia2010", "Benin2011", "BurkinaFaso2010"){
+	if inlist(name, "Armenia2010", "Benin2011", "BurkinaFaso2010", "Burundi2010") {
 	gen c_skin2skin =.
 	}
 
@@ -120,7 +120,12 @@ order *,sequential  //make sure variables are in order.
 	replace stay = . if mi(m61) | inlist(m61,999)
 	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
 	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	}	
+	}
+	
+    if inlist(name, "Burundi2010"){
+	gen stay=.
+	gen c_sba_eff1 =.
+	}
 	
 	*c_sba_eff1_q: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth) among those with any SBA
 	gen c_sba_eff1_q = (c_facdel==1 & c_sba == 1 & stay==1 & c_earlybreast == 1) if c_sba == 1	
