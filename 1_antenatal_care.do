@@ -48,6 +48,12 @@ order *,sequential
 	egen anc_skill = rowtotal(m2a m2b m2c m2d m2e m2g),mi
 	}	
 	
+    *anc_skill: Categories as skilled: doctor, nurse, midwife...
+	if inlist(name, "Cambodia2014") {
+	mdesc m2a-m2m
+	egen anc_skill = rowtotal(m2a m2b m2c),mi
+	}	
+	
 	*c_anc_eff: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) of births in last 2 years
 	egen anc_blood = rowtotal(m42c m42d m42e),mi
 	gen c_anc_eff = (c_anc == 1 & anc_skill>0 & anc_blood == 3) 
@@ -72,7 +78,7 @@ order *,sequential
 	replace c_anc_bp = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_bp = 1 if m42c==1
 		
-	if inlist(name,"BurkinaFaso2010"){
+	if inlist(name,"BurkinaFaso2010", "Cambodia2014"){
 	drop c_anc_bp
 	gen c_anc_bp = inlist(m42c,1)
 	replace c_anc_bp = 0 if m42c==0
@@ -88,7 +94,7 @@ order *,sequential
 	replace c_anc_bs = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_bs = 1 if m42e==1
 	
-	if inlist(name,"BurkinaFaso2010"){
+	if inlist(name,"BurkinaFaso2010", "Cambodia2014"){
 	drop c_anc_bs
 	gen c_anc_bs = inlist(m42e,1)
 	replace c_anc_bs = 0 if m42e==0
@@ -105,7 +111,7 @@ order *,sequential
 	replace c_anc_ur = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_ur = 1 if m42d==1
 	
-	if inlist(name,"BurkinaFaso2010"){
+	if inlist(name,"BurkinaFaso2010", "Cambodia2014"){
 	drop c_anc_ur
 	gen c_anc_ur = inlist(m42d,1)
 	replace c_anc_ur = 0 if m42d==0
@@ -179,4 +185,5 @@ order *,sequential
     gen c_anc_eff3_q = (c_anc == 1 & anc_skill>0 & anc_blood == 3 & rh_anc_neotet == 1 & inrange(m13,0,3)) if c_anc_any == 1
 	replace c_anc_eff3_q = . if (c_anc == . | anc_skill == . | anc_blood == . | rh_anc_neotet == . ) & c_anc_any == 1
 	
+
 
