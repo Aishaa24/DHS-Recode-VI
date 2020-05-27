@@ -17,14 +17,7 @@ order *,sequential
 	*c_anc_ear: First antenatal care visit in first trimester of pregnancy of births in last 2 years
 	gen c_anc_ear = 0 if m2n != .    // m13 based on Women who had seen someone for antenatal care for their last born child
 	replace c_anc_ear = 1 if inrange(m13,0,3)
-	replace c_anc_ear = . if m13 == 98 | m13 == .
-	
-	if inlist(name,"BurkinaFaso2010"){
-	drop c_anc_ear
-	gen c_anc_ear =  1 if inrange(m13,0,3)
-	replace c_anc_ear = 0 if !inrange(m13,0,3)
-	replace c_anc_ear = . if m13 == 98 | m13 == .
-	}
+	replace c_anc_ear = . if m13 == 98 | m13 == 99 | m13 == .
 	
 	*c_anc_ear_q: First antenatal care visit in first trimester of pregnancy among ANC users of births in last 2 years
 	gen c_anc_ear_q = .
@@ -44,7 +37,7 @@ order *,sequential
 	}
 	
 	*anc_skill: Categories as skilled: doctor, nurse, midwife, auxiliary nurse/midwife...
-	if inlist(name, "Benin2011") {
+	if inlist(name, "Benin2011", "Burundi2010" ) {
 	mdesc m2a-m2m
 	egen anc_skill = rowtotal(m2a m2b),mi
 	}	
@@ -187,4 +180,3 @@ order *,sequential
 	replace c_anc_eff3_q = . if (c_anc == . | anc_skill == . | anc_blood == . | rh_anc_neotet == . ) & c_anc_any == 1
 	
 
-	
