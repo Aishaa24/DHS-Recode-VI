@@ -98,6 +98,23 @@ order *,sequential  //make sure variables are in order.
 			replace c_diarrhea_pro = . if `var' == 8 
 		}	
 		
+		if inlist(name,"Cameroon2011") {
+			global h12 "h12a h12b h12c h12j h12m h12n h12o h12u h12w h12z"
+		}
+			
+		foreach var in $h12  {
+			replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & `var' == 1 
+			replace c_diarrhea_pro = . if `var' == 8 
+		}	
+		
+		if inlist(name,"Chad2014") {
+		   global h12 "h12a h12b h12c h12d h12j h12m h12n h12o h12p h12r h12z"
+		}
+			
+		foreach var in $h12  {
+			replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & `var' == 1 
+			replace c_diarrhea_pro = . if `var' == 8 
+		}	
 		
 *c_diarrhea_mof	Child with diarrhea received more fluids
         gen c_diarrhea_mof = (h38 == 5) if !inlist(h38,.,8) & c_diarrhea == 1
@@ -179,6 +196,14 @@ order *,sequential  //make sure variables are in order.
 		if inlist(name,"Cambodia2014") {
 		global h32 " h32a h32b h32c h32d h32f h32g h32h h32j h32o h32p h32q h32z"
 		}
+		
+		if inlist(name,"Cameroon2011") {
+		global h32 " h32a h32b h32c h32j h32m h32n h32o h32u h32w h32z"
+		}
+	
+		if inlist(name,"Chad2014") {
+		global h32 " h32a h32b h32c h32d h32j h32m h32n h32o h32p h32r  h32z"
+		}
 	
 		foreach var in $h32 {
 			replace c_treatARI = 1 if c_treatARI == 0 & `var' == 1 
@@ -209,4 +234,3 @@ order *,sequential  //make sure variables are in order.
 
         gen c_illtreat2 = (c_fevertreat == 1 | c_diarrhea_pro == 1 | c_treatARI == 1) if c_illness2 == 1
 		replace c_illtreat2 = . if c_fevertreat == . | c_diarrhea_pro == . | c_treatARI == .
-
