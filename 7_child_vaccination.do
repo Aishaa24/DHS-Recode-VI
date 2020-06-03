@@ -1,4 +1,4 @@
-*****************************
+******************************
 *** Child vaccination ********
 ******************************   
 
@@ -47,8 +47,27 @@ if inlist(name,"Armenia2010"){
 		gen c_dpt3 = .
 		replace c_dpt3 = 1 if (h7==1 | h7==2 | h7==3|inrange(pen3,1,3)) 
 		replace c_dpt3 = 0 if h7==0 & pen3==0 
-                    }				
+                    }
 					
+if inlist(name,"Congorep2011"){
+*c_dpt1	child	Child received DPT1/Pentavalent 1 vaccination	
+        drop c_dpt1
+		gen c_dpt1 = .
+		replace c_dpt1 = 1 if (h3==1 | h3==2 | h3==3|inrange(s506t1,1,3)) 
+		replace c_dpt1 = 0 if h3==0 & s506t1==0 
+
+*c_dpt2	child			Child received DPT2/Pentavalent2 vaccination	
+        drop c_dpt2		
+		gen c_dpt2 = .
+		replace c_dpt2 = 1 if (h5==1 | h5==2 | h5==3|inrange(s506t2,1,3)) 
+		replace c_dpt2 = 0 if h5==0 & s506t2==0 
+		
+		drop c_dpt3
+		gen c_dpt3 = .
+		replace c_dpt3 = 1 if (h7==1 | h7==2 | h7==3|inrange(s506t3,1,3)) 
+		replace c_dpt3 = 0 if h7==0 & s506t3==0 
+                    }							
+				
 *c_bcg	child			Child received BCG vaccination
 		gen c_bcg  = . 
 		replace c_bcg  = 1 if (h2 ==1 | h2 ==2 | h2 ==3)  
