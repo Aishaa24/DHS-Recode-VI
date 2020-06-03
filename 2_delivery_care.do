@@ -1,4 +1,4 @@
-*****************************
+******************************
 *** Delivery Care************* 
 ******************************
 gen DHS_phase=substr(v000, 3, 1)
@@ -21,7 +21,7 @@ order *,sequential  //make sure variables are in order.
 	egen sba_skill = rowtotal(m3a m3b m3c),mi
 	}
 	
-	if inlist(name, "Bangladesh2011", "Bangladesh2014"){
+	if inlist(name, "Bangladesh2011", "Bangladesh2014", "Comoros2012"){
 	foreach var of varlist m3a-m3c{
 	replace `var' = . if !inlist(`var',0,1)	
 	}
@@ -42,8 +42,15 @@ order *,sequential  //make sure variables are in order.
 	egen sba_skill = rowtotal(m3a m3b m3c m3d m3e),mi
 	}
 	
-	if inlist(name, "Chad2014"){
+	if inlist(name, "Chad2014", "Congorep2011"){
 	foreach var of varlist m3a m3b m3c m3d{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3c),mi
+	}
+	
+	if inlist(name, "Congodr2013"){
+	foreach var of varlist m3a m3b m3g{
 	replace `var' = . if !inlist(`var',0,1)	
 	}
 	egen sba_skill = rowtotal(m3a m3b m3c),mi
@@ -75,9 +82,11 @@ order *,sequential  //make sure variables are in order.
 	
     *c_skin2skin: child placed on mother's bare skin immediately after birth of births in last 2 years
 	
-	if inlist(name, "Armenia2010", "Benin2011", "BurkinaFaso2010", "Burundi2010", "Cambodia2014", "Bangladesh2011", "Cameroon2011","Chad2014") {
-	gen c_skin2skin =.
+	capture confirm variable m77
+	if _rc == 0{
+	gen c_skin2skin = (m77 == 1) if !mi(m77)               
 	}
+	gen c_skin2skin = .
 
 	if inlist(name, "Bangladesh2014"){
 	gen c_skin2skin = (s435ai  == 1) if   !inlist(s435ai,.,8) 
@@ -125,6 +134,20 @@ order *,sequential  //make sure variables are in order.
 	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
 	}
 	
+	if inlist(name, "Comoros2012"){
+	gen stay = (inrange(m61,124,173) | inrange(m61,201,224)|inrange(m61,301,308))  
+	replace stay = . if mi(m61) | inlist(m61,999)
+	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
+	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
+	}
+	
+	if inlist(name, "Congorep2011"){
+	gen stay = (inlist(m61,124) | inrange(m61,201,230)|inrange(m61,301,312))  
+	replace stay = . if mi(m61) | inlist(m61,998,999)
+	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
+	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
+	}
+	
     if inlist(name, "Burundi2010", "Cambodia2014", "Cameroon2011"){
 	gen stay=.
 	gen c_sba_eff1 =.
@@ -132,6 +155,13 @@ order *,sequential  //make sure variables are in order.
 	
 	if inlist(name, "Chad2014"){
 	gen stay = (inrange(m61,124,130) | inrange(m61,201,225)|inrange(m61,301,313))  
+	replace stay = . if mi(m61) | inlist(m61,998)
+	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
+	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
+	}
+	
+	if inlist(name, "Congodr2013"){
+	gen stay = (inrange(m61,124,160) | inrange(m61,201,260)|inrange(m61,301,312))  
 	replace stay = . if mi(m61) | inlist(m61,998)
 	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
 	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
@@ -148,4 +178,6 @@ order *,sequential  //make sure variables are in order.
 	*c_sba_eff2_q: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth, skin2skin contact) among those with any SBA
 	gen c_sba_eff2_q = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1 & c_skin2skin == 1) if c_sba == 1	
 	replace c_sba_eff2_q = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . | c_skin2skin == .
+	
+
 	
