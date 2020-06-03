@@ -78,7 +78,7 @@ order *,sequential  //make sure variables are in order.
 	
 	replace c_earlybreast = 0 if m4 != .    //  based on Last born children who were ever breastfed
 	replace c_earlybreast = 1 if inlist(m34,0,100)
-	replace c_earlybreast = . if inlist(m34,999,299)
+	replace c_earlybreast = . if inlist(m34,999,299,199)
 	
     *c_skin2skin: child placed on mother's bare skin immediately after birth of births in last 2 years
 	
@@ -106,6 +106,7 @@ order *,sequential  //make sure variables are in order.
 	replace c_caesarean =. if m17==9
 	
     *c_sba_eff1: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth)
+	/*
 	if inlist(name, "Armenia2010", "BurkinaFaso2010"){
 	gen stay = (inrange(m61,124,198)|inrange(m61,201,298)|inrange(m61,301,398))  
 	replace stay = . if mi(m61) | inlist(m61,199,299,998)
@@ -166,18 +167,24 @@ order *,sequential  //make sure variables are in order.
 	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
 	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
 	}
+	*/
+	
+	gen stay = 0 if m15 != .
+	replace stay = 1 if stay == 0 & (inrange(m61,124,198)|inrange(m61,201,298)|inrange(m61,301,398))
+	replace stay = . if inlist(m61,199,299,998) // filter question, based on m15
+	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
+	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
+	// you may need to check if this code work for all countries, which is the case in Recode VII. In this case, you don't need if inlist() anymore.
+	
 	
 	*c_sba_eff1_q: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth) among those with any SBA
-	gen c_sba_eff1_q = (c_facdel==1 & c_sba == 1 & stay==1 & c_earlybreast == 1) if c_sba == 1	
-	replace c_sba_eff1_q = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
+	gen c_sba_eff1_q = c_sba_eff1 if c_sba == 1
 	
 	*c_sba_eff2: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth, skin2skin contact)
 	gen c_sba_eff2 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1 & c_skin2skin == 1) 
 	replace c_sba_eff2 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . | c_skin2skin == .
 	
 	*c_sba_eff2_q: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth, skin2skin contact) among those with any SBA
-	gen c_sba_eff2_q = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1 & c_skin2skin == 1) if c_sba == 1	
-	replace c_sba_eff2_q = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . | c_skin2skin == .
-	
+	gen c_sba_eff2_q =  c_sba_eff2 if c_sba == 1
 
 	
