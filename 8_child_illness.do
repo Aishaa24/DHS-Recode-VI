@@ -78,7 +78,6 @@ order *,sequential  //make sure variables are in order.
 			replace c_diarrhea_pro = . if `var' == 8 
 		}	
 		
-		
 			if inlist(name,"Burundi2010") {
 			global h12 "h12a h12b h12c h12d h12j h12l h12m  h12n h12z"
 		}
@@ -110,7 +109,20 @@ order *,sequential  //make sure variables are in order.
 		if inlist(name,"Chad2014") {
 		   global h12 "h12a h12b h12c h12d h12j h12m h12n h12o h12p h12r h12z"
 		}
-			
+		
+		if inlist(name,"Comoros2012") {
+		   global h12 "h12a h12b h12c h12d h12e h12f h12j h12l h12z"
+		}
+		
+		if inlist(name,"Congorep2011") {
+		   global h12 "h12a h12b h12c h12j h12l h12m h12z"
+		}
+		
+				
+		if inlist(name,"Congodr2013") {
+		   global h12 "h12a h12b h12c h12d h12e h12f h12g h12j h12l h12m h12z"
+		}
+		
 		foreach var in $h12  {
 			replace c_diarrhea_pro = 1 if c_diarrhea_pro == 0 & `var' == 1 
 			replace c_diarrhea_pro = . if `var' == 8 
@@ -205,6 +217,19 @@ order *,sequential  //make sure variables are in order.
 		global h32 " h32a h32b h32c h32d h32j h32m h32n h32o h32p h32r  h32z"
 		}
 	
+		if inlist(name,"Comoros2012") {
+		global h32 " h32a h32b h32c h32d h32e h32f h32j h32l h32z"
+		}
+		
+		if inlist(name,"Congorep2011") {
+		global h32 " h32a h32b h32c h32l h32m h32z"
+		}
+		
+				
+		if inlist(name,"Congodr2013") {
+		global h32 " h32a h32b h32c h32d h32e h32f h32g h32j h32l h32m h32z"
+		}
+			
 		foreach var in $h32 {
 			replace c_treatARI = 1 if c_treatARI == 0 & `var' == 1 
 			replace c_treatARI = . if `var' == 8 | c_ari != 1
