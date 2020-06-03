@@ -18,7 +18,7 @@ macro drop _all
 
 //NOTE FOR WINDOWS USERS : use "/" instead of "\" in your paths
 
-global root "C:\Users\wb\OneDrive - WBG\Documents\DHS\MEASURE UHC DATA"
+global root "C:\Users\wb536558\OneDrive - WBG\Documents\DHS\MEASURE UHC DATA"
 
 * Define path for data sources
 global SOURCE "${root}/RAW DATA/Recode VI"
@@ -40,6 +40,8 @@ foreach name in $DHScountries_Recode_VI{
 
 tempfile birth ind men hm hiv hh iso 
 
+*local name "Congodr2013"
+
 ******************************
 *****domains using birth data*
 ******************************
@@ -56,8 +58,6 @@ use "${SOURCE}/DHS-`name'/DHS-`name'birth.dta", clear
     do "${DO}/10_child_mortality"
     do "${DO}/11_child_other"
 	
-
-
 *housekeeping for birthdata
    //generate the demographics for child who are dead or no longer living in the hh. 
    
@@ -199,10 +199,22 @@ gen name = "`name'"
 	gen surveyid = surveyname + year + "DHS"
 	}
 
+	if inlist(name,"Congorep2011") {
+	rename  surveyid  SurveyId
+	gen surveyname= "CG"
+	egen surveyid = concat(surveyname SurveyId )
+	}
+	
+	if inlist(name,"Congodr2013") {
+	rename  surveyid  SurveyId
+	gen surveyname= "CD"
+	egen surveyid = concat(surveyname SurveyId )
+	}
+	
 	preserve
 	do "${DO}/Quality_control"
 	save "${INTER}/quality_control-`name'",replace
-        restore 
+    restore 
 
 	
 *** Specify sample size to HEFPI
