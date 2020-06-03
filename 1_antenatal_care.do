@@ -14,9 +14,9 @@ order *,sequential
 	gen c_anc_any = (inrange(m14,1,20)) if m14<=20        
 	
 	*c_anc_ear: First antenatal care visit in first trimester of pregnancy of births in last 2 years
-	gen c_anc_ear = 0 if m2n != .    // m13 based on Women who had seen someone for antenatal care for their last born child
+	gen c_anc_ear = 0 if m2n != .   // filter question, m13 based on Women who had seen someone for antenatal care for their last born child
 	replace c_anc_ear = 1 if inrange(m13,0,3)
-	replace c_anc_ear = . if m13 == 98 | m13 == 99 | m13 == .
+	replace c_anc_ear = . if m13 == 98 | m13 == 99
 	
 	*c_anc_ear_q: First antenatal care visit in first trimester of pregnancy among ANC users of births in last 2 years
 	gen c_anc_ear_q = .
@@ -70,17 +70,7 @@ order *,sequential
 	mdesc m2a-m2m
 	egen anc_skill = rowtotal(m2a m2b m2g),mi
 	}
-	
-	*c_anc_eff: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) of births in last 2 years
-	egen anc_blood = rowtotal(m42c m42d m42e),mi
-	gen c_anc_eff = (c_anc == 1 & anc_skill>0 & anc_blood == 3) 
-	replace c_anc_eff = . if c_anc ==. |  anc_skill==. | anc_blood ==.
-	
-	*c_anc_eff_q: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) among ANC users of births in last 2 years
-	gen c_anc_eff_q = . 
-	replace c_anc_eff_q = 1 if c_anc_eff == 1 & c_anc_any == 1 
-	replace c_anc_eff_q = 0 if c_anc_eff == 0 & c_anc_any == 1 
-	
+		
 	*c_anc_ski: antenatal care visit with skilled provider for pregnancy of births in last 2 years
 	gen c_anc_ski = .
 	replace c_anc_ski = 1 if anc_skill >= 1
@@ -101,6 +91,9 @@ order *,sequential
 	replace c_anc_bp = 0 if m42c==0
 	replace c_anc_bp = . if m42c==.
 	}
+// please stay with Aline's template for c_anc_bp,c_anc_bs and c_anc_ur, don't need the if inlist()...., because there is a filter question here. if m2n=1, then m42c is not asked. We should not treat c_anc_bp as missing when m42c is not asked, we should treat it as 0 instead.
+
+
 
 	*c_anc_bp_q: Blood pressure measured during pregnancy among ANC users of births in last 2 years
 	gen c_anc_bp_q = (c_anc_bp==1) if c_anc_any == 1 
@@ -185,20 +178,26 @@ order *,sequential
 	*c_anc_tet_q: pregnant women vaccinated against tetanus among ANC users for last birth in last 2 years
 	gen c_anc_tet_q = (rh_anc_neotet == 1) if c_anc_any == 1
 	replace c_anc_tet_q = . if c_anc_any == 1 & mi(rh_anc_neotet)
+
+	*c_anc_eff: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) of births in last 2 years
+	egen anc_blood = rowtotal(m42c m42d m42e) if m2n != .
+	gen c_anc_eff = (c_anc == 1 & anc_skill>0 & anc_blood == 3) 
+	replace c_anc_eff = . if c_anc ==. |  anc_skill==. | anc_blood ==.
+	
+	*c_anc_eff_q: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples) among ANC users of births in last 2 years
+	gen c_anc_eff_q = c_anc_eff if c_anc_any == 1
 	
 	*c_anc_eff2: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples, tetanus vaccination) of births in last 2 years
 	gen c_anc_eff2 = (c_anc == 1 & anc_skill>0 & anc_blood == 3 & rh_anc_neotet == 1) 
 	replace c_anc_eff2 = . if c_anc == . | anc_skill == . | anc_blood == . | rh_anc_neotet == .
 	
 	*c_anc_eff2_q: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples, tetanus vaccination) among ANC users of births in last 2 years
-	gen c_anc_eff2_q = (c_anc == 1 & anc_skill>0 & anc_blood == 3 & rh_anc_neotet == 1) if c_anc_any == 1
-	replace c_anc_eff2_q = . if (c_anc == . | anc_skill == . | anc_blood == . | rh_anc_neotet == . ) & c_anc_any == 1
+	gen c_anc_eff2_q = c_anc_eff2 if c_anc_any == 1
 	 
 	*c_anc_eff3: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples, tetanus vaccination, start in first trimester) of births in last 2 years 
 	gen c_anc_eff3 = (c_anc == 1 & anc_skill>0 & anc_blood == 3 & rh_anc_neotet == 1 & inrange(m13,0,3)) 
-	replace c_anc_eff3 = . if c_anc == . | anc_skill == . | anc_blood == . | rh_anc_neotet == .
+	replace c_anc_eff3 = . if c_anc == . | anc_skill == . | anc_blood == . | rh_anc_neotet == . | m13 == 98
 	 
 	*c_anc_eff3_q: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples, tetanus vaccination, start in first trimester) among ANC users of births in last 2 years
-    gen c_anc_eff3_q = (c_anc == 1 & anc_skill>0 & anc_blood == 3 & rh_anc_neotet == 1 & inrange(m13,0,3)) if c_anc_any == 1
-	replace c_anc_eff3_q = . if (c_anc == . | anc_skill == . | anc_blood == . | rh_anc_neotet == . ) & c_anc_any == 1
+    gen c_anc_eff3_q = c_anc_eff3 if c_anc_any == 1
 	
