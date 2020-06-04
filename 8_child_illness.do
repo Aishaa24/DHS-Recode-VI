@@ -155,9 +155,10 @@ order *,sequential  //make sure variables are in order.
 *c_sevdiarrhea	Child with severe diarrhea
 		gen eat = (inlist(h39,0,1,2)) if !inlist(h39,.,8) & c_diarrhea == 1
         gen c_sevdiarrhea = (c_diarrhea==1 & (c_fever == 1 | c_diarrhea_mof == 1 | eat == 1)) 
-		replace c_sevdiarrhea = . if c_diarrhea == . | c_fever == . | c_diarrhea_mof ==.| eat==.
+		replace c_sevdiarrhea = . if c_diarrhea == . | c_fever == . | (c_diarrhea == 1 & (c_diarrhea_mof ==.| eat==.))
 		/* diarrhea in last 2 weeks AND any of the following three conditions: fever OR offered 
 		more than usual to drink OR given much less or nothing to eat or stopped eating */
+		// change this becase the sample sizes of c_diarrhea_mof and eat are restricted to c_diarrhea = 1.
 		
 *c_sevdiarrheatreat	Child with severe diarrhea seen by formal healthcare provider
         gen c_sevdiarrheatreat = (c_sevdiarrhea == 1 & c_diarrhea_pro == 1) if c_diarrhea == 1
@@ -168,9 +169,9 @@ order *,sequential  //make sure variables are in order.
 		gen c_sevdiarrheatreat_q = (iv ==1 ) if c_sevdiarrheatreat == 1
 		
 *c_ari	Child with acute respiratory infection (ARI)	
-        gen c_ari = . 
-		replace c_ari= 1 if inlist(h31c,1,3) & ccough== 1 & h31b == 1	
-		replace c_ari= 0 if h31b==0 | ccough==0 	
+        recode h31b h31c h31 (8 9 =.)
+		gen c_ari = (inlist(h31c,1,3) & ccough == 1 & h31b == 1) 
+		replace c_ari=. if h31b == . | ccough == .
 		/* Children under 5 with cough and rapid breathing in the 
 		two weeks preceding the survey which originated from the chest. */
 		
@@ -254,8 +255,9 @@ order *,sequential  //make sure variables are in order.
 		replace c_illness2 =. if c_diarrhea == . | c_ari2 == . | c_fever == .
 		
 *c_illtreat	Child with any illness symptoms taken to formal provider
-        gen c_illtreat = (c_fevertreat == 1 | c_diarrhea_pro == 1 | c_treatARI == 1) if c_illness == 1
-		replace c_illtreat = . if c_fevertreat == . | c_diarrhea_pro == . | c_treatARI == .
+        gen c_illtreat = (c_fevertreat == 1 | c_diarrhea_pro == 1 | c_treatARI == 1) if c_illness == 1 
+		replace c_illtreat = . if (c_fever == 1 & c_fevertreat == .) | (c_diarrhea == 1 & c_diarrhea_pro == .) | (c_ari == 1 & c_treatARI == .) 
 
-        gen c_illtreat2 = (c_fevertreat == 1 | c_diarrhea_pro == 1 | c_treatARI == 1) if c_illness2 == 1
-		replace c_illtreat2 = . if c_fevertreat == . | c_diarrhea_pro == . | c_treatARI == .
+         gen c_illtreat2 = (c_fevertreat == 1 | c_diarrhea_pro == 1 | c_treatARI2 == 1) if c_illness2 == 1
+		replace c_illtreat2 = . if (c_fever == 1 & c_fevertreat == .) | (c_diarrhea == 1 & c_diarrhea_pro == .) | (c_ari2 == 1 & c_treatARI2 == .) 
+
