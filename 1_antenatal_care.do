@@ -5,13 +5,20 @@
 rename *,lower
 order *,sequential
 
+
 	*c_anc: 4+ antenatal care visits of births in last 2 years	
 	*if ~inlist(name,"Armenia2010") {
+	clonevar cnumvisit=m14                   //Last pregnancies in last 2 years of women currently aged 15-49	
+	replace cnumvisit=. if cnumvisit==98 | cnumvisit==99 
 
-	gen c_anc = (inrange(m14,4,20)) if m14<=20 
-	
+	gen c_anc = 1 if cnumvisit >= 4
+	replace c_anc=0 if c_anc==. 
+	replace c_anc=. if cnumvisit==.  
+
 	*c_anc_any: any antenatal care visits of births in last 2 years
-	gen c_anc_any = (inrange(m14,1,20)) if m14<=20        
+	gen c_anc_any = .
+	replace c_anc_any = 1 if inrange(m14,1,20)
+	replace c_anc_any = 0 if m14 == 0                                              //m14 = 98 is missing 
 	
 	*c_anc_ear: First antenatal care visit in first trimester of pregnancy of births in last 2 years
 	gen c_anc_ear = 0 if m2n != .   // filter question, m13 based on Women who had seen someone for antenatal care for their last born child
@@ -24,52 +31,19 @@ order *,sequential
 	replace c_anc_ear_q = 0 if c_anc_ear == 0 & c_anc_any == 1
 	
 	*anc_skill: Categories as skilled: doctor, nurse, midwife, auxiliary nurse/midwife...
-	if inlist(name, "Armenia2010") {
-	mdesc m2a-m2m
-	egen anc_skill = rowtotal(m2a m2c m2d m2e m2f m2i),mi
-	}
 	
-	*anc_skill: Categories as skilled: doctor, nurse, midwife, paramedic, family welfare assistant, community skilled birth attendants, and MA/SACMO
-	if inlist(name, "Bangladesh2011", "Bangladesh2014") {
-	mdesc m2a-m2m
-	egen anc_skill = rowtotal(m2a m2b m2c m2d m2e m2f),mi
-	}
-	
-	*anc_skill: Categories as skilled: doctor, nurse, midwife, auxiliary nurse/midwife...
-	if inlist(name, "Benin2011", "Burundi2010" ) {
-	mdesc m2a-m2m
-	egen anc_skill = rowtotal(m2a m2b),mi
-	}	
-	
-   *anc_skill: Categories as skilled: doctor, nurse, midwife, auxiliary, birth attendants, and trained birth attendants...
-	if inlist(name, "BurkinaFaso2010") {
-	mdesc m2a-m2m
-	egen anc_skill = rowtotal(m2a m2b m2c m2d m2e m2g),mi
-	}	
-	
-    *anc_skill: Categories as skilled: doctor, nurse, midwife...
-	if inlist(name, "Cambodia2014", "Cameroon2011") {
-	mdesc m2a-m2m
-	egen anc_skill = rowtotal(m2a m2b m2c),mi
-	}	
-	
-	*anc_skill: Categories as skilled: doctor, nurse, midwife, birth attendants, hospital/health center...
-	if inlist(name, "Chad2014", "Congorep2011") {
-	mdesc m2a-m2m
-	egen anc_skill = rowtotal(m2a m2b m2c m2d),mi
-	}	
-
-	*anc_skill: Categories as skilled: doctor, nurse, midwife...
-	if inlist(name, "Comoros2012") {
-	mdesc m2a-m2m
-	egen anc_skill = rowtotal(m2a m2b m2c),mi
-	}	
-	
-	*anc_skill: Categories as skilled: doctor, nurse, midwife...
-	if inlist(name, "Congodr2013") {
-	mdesc m2a-m2m
-	egen anc_skill = rowtotal(m2a m2b m2g),mi
-	}
+	foreach var of varlist m2a-m2m {
+	local lab: variable label `var' 
+    replace `var' = . if ///
+  regexm("`lab'","trained") & ///
+  (!regexm("`lab'","doctor|nurse|midwife|mifwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|auxiliary birth attendant|physician assistant|professional|ferdsher|feldshare|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant|matron|general practitioner") ///
+	|regexm("`lab'","na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife|box") )
+	replace `var' = . if !inlist(`var',0,1)
+	 }
+	 
+	/* do consider as skilled if contain words in 
+	   the first group but don't contain any words in the second group */
+    egen anc_skill = rowtotal(m2a-m2m),mi
 		
 	*c_anc_ski: antenatal care visit with skilled provider for pregnancy of births in last 2 years
 	gen c_anc_ski = .
@@ -81,59 +55,30 @@ order *,sequential
 	replace c_anc_ski_q = . if mi(c_anc_ski) & c_anc_any == 1
 	
 	*c_anc_bp: Blood pressure measured during pregnancy of births in last 2 years
-	gen c_anc_bp = .
-	replace c_anc_bp = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
-	replace c_anc_bp = 1 if m42c==1
-		
-	if inlist(name,"BurkinaFaso2010", "Cambodia2014", "Cameroon2011", "Chad2014", "Comoros2012","Congorep2011", "Congodr2013"){
-	drop c_anc_bp
-	gen c_anc_bp = inlist(m42c,1)
-	replace c_anc_bp = 0 if m42c==0
-	replace c_anc_bp = . if m42c==.
-	}
-// please stay with Aline's template for c_anc_bp,c_anc_bs and c_anc_ur, don't need the if inlist()...., because there is a filter question here. if m2n=1, then m42c is not asked. We should not treat c_anc_bp as missing when m42c is not asked, we should treat it as 0 instead.
-
-
-
+	gen c_anc_bp = 0 if m2n != . // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
+    replace c_anc_bp = 1 if m42c==1
+	
 	*c_anc_bp_q: Blood pressure measured during pregnancy among ANC users of births in last 2 years
 	gen c_anc_bp_q = (c_anc_bp==1) if c_anc_any == 1 
 	replace c_anc_bp_q = . if mi(c_anc_bp) & c_anc_any == 1 
 	
 	*c_anc_bs: Blood sample taken during pregnancy of births in last 2 years
-	gen c_anc_bs = .
-	replace c_anc_bs = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
+	gen c_anc_bs = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_bs = 1 if m42e==1
-	
-	if inlist(name,"BurkinaFaso2010", "Cambodia2014","Cameroon2011", "Chad2014", "Comoros2012", "Congorep2011","Congodr2013"){
-	drop c_anc_bs
-	gen c_anc_bs = inlist(m42e,1)
-	replace c_anc_bs = 0 if m42e==0
-	replace c_anc_bs = . if m42e==.
-	}
 	
 	*c_anc_bs_q: Blood sample taken during pregnancy among ANC users of births in last 2 years
 	gen c_anc_bs_q = (c_anc_bs==1) if c_anc_any == 1 
-	replace c_anc_bs_q = 0 if c_anc_bs==0
 	replace c_anc_bs_q = . if c_anc_bs == . & c_anc_any == 1
 	
 	*c_anc_ur: Urine sample taken during pregnancy of births in last 2 years
-	gen c_anc_ur = .
-	replace c_anc_ur = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
+	gen c_anc_ur = 0 if m2n != .    // For m42a to m42e based on women who had seen someone for antenatal care for their last born child
 	replace c_anc_ur = 1 if m42d==1
-	
-	if inlist(name,"BurkinaFaso2010", "Cambodia2014", "Cameroon2011", "Chad2014", "Comoros2012", "Congorep2011", "Congodr2013"){
-	drop c_anc_ur
-	gen c_anc_ur = inlist(m42d,1)
-	replace c_anc_ur = 0 if m42d==0
-	replace c_anc_ur = . if m42d==.
-	}
 	
 	*c_anc_ur_q: Urine sample taken during pregnancy among ANC users of births in last 2 years
 	gen c_anc_ur_q = (c_anc_ur==1) if c_anc_any == 1 
 	replace c_anc_ur_q = . if mi(c_anc_ur) & c_anc_any == 1 
 	
 	*c_anc_ir: iron supplements taken during pregnancy of births in last 2 years
-
 	replace m45=. if inlist(m45,8,9)
 	gen anc_ir = m45
 	gen c_anc_ir = inlist(anc_ir,1) if  !mi(anc_ir)
@@ -200,4 +145,3 @@ order *,sequential
 	 
 	*c_anc_eff3_q: Effective ANC (4+ antenatal care visits, any skilled provider, blood pressure, blood and urine samples, tetanus vaccination, start in first trimester) among ANC users of births in last 2 years
     gen c_anc_eff3_q = c_anc_eff3 if c_anc_any == 1
-	
