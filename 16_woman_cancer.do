@@ -32,6 +32,23 @@ if _rc == 0 {
     replace w_mammogram=. if wage<40|wage>49
 }
 
+if inlist(name, "Guatemala2014"){
+	drop w_papsmear
+	gen w_papsmear = .
+	replace w_papsmear = 1 if  s1015==1	
+	replace w_papsmear=0 if s1015==0
+	replace w_papsmear=. if s1015==.
+	}
+	
+	if inlist(name, "DominicanRepublic2013"){
+	ren v012 wage
+	drop w_papsmear
+	gen w_papsmear = .
+	replace w_papsmear = inrange(s1039,1,3)
+	replace w_papsmear=0 if s1039==4
+	replace w_papsmear=. if s1039==. | s1039==8
+	replace w_papsmear=. if wage<20|wage>49
+	}
 
 capture confirm variable qs415 qs416u 
 if _rc==0 {
@@ -41,6 +58,14 @@ if _rc==0 {
     tab wage if w_mammogram!=. /*DHS sample is women aged 15-49*/
     replace w_mammogram=. if wage<50|wage>69
 }
+
+	if inlist(name, "DominicanRepublic2013"){
+	drop w_mammogram
+	gen w_mammogram = .
+	replace w_mammogram = inrange(s1038,1,3)
+	replace w_mammogram=0 if s1038==4
+	replace w_mammogram=. if s1038==. | s1038==8
+	}
 // They may be country specific in surveys.
 
 
