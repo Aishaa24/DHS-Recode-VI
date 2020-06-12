@@ -13,48 +13,16 @@ rename *,lower   //make lables all lowercase.
 order *,sequential  //make sure variables are in order. 
 
 	*sba_skill: Categories as skilled: doctor, nurse, midwife, auxiliary nurse/midwife...
-	
-	if inlist(name, "Armenia2010", "Cambodia2014", "Cameroon2011"){
-	foreach var of varlist m3a-m3c{
-	replace `var' = . if !inlist(`var',0,1)	
-	}
-	egen sba_skill = rowtotal(m3a m3b m3c),mi
-	}
-	
-	if inlist(name, "Bangladesh2011", "Bangladesh2014", "Comoros2012"){
-	foreach var of varlist m3a-m3c{
-	replace `var' = . if !inlist(`var',0,1)	
-	}
-	egen sba_skill = rowtotal(m3a m3b m3c m3d m3e m3f),mi
-	}
-	
-	if inlist(name, "Benin2011", "Burundi2010"){
-	foreach var of varlist m3a-m3b{
-	replace `var' = . if !inlist(`var',0,1)	
-	}
-	egen sba_skill = rowtotal(m3a m3b),mi
-	}
-	
-	if inlist(name, "BurkinaFaso2010"){
-	foreach var of varlist m3a m3b m3c m3d m3e{
-	replace `var' = . if !inlist(`var',0,1)	
-	}
-	egen sba_skill = rowtotal(m3a m3b m3c m3d m3e),mi
-	}
-	
-	if inlist(name, "Chad2014", "Congorep2011"){
-	foreach var of varlist m3a m3b m3c m3d{
-	replace `var' = . if !inlist(`var',0,1)	
-	}
-	egen sba_skill = rowtotal(m3a m3b m3c),mi
-	}
-	
-	if inlist(name, "Congodr2013"){
-	foreach var of varlist m3a m3b m3g{
-	replace `var' = . if !inlist(`var',0,1)	
-	}
-	egen sba_skill = rowtotal(m3a m3b m3c),mi
-	}
+	foreach var of varlist m3a-m3n {
+	local lab: variable label `var' 
+    replace `var' = . if ///
+	!regexm("`lab'","trained") & (!regexm("`lab'","doctor|nurse|midwife|mifwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|auxiliary birth attendant|physician assistant|professional|ferdsher|feldshare|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant|general practitioner|matron") ///
+	|regexm("`lab'","na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife|box"))
+	replace `var' = . if !inlist(`var',0,1)
+	 }
+	/* do consider as skilled if contain words in 
+	   the first group but don't contain any words in the second group */
+    egen sba_skill = rowtotal(m3a-m3n),mi
 	
 	*c_hospdel: child born in hospital of births in last 2 years  
 	decode m15, gen(m15_lab)
@@ -89,6 +57,7 @@ order *,sequential  //make sure variables are in order.
 	gen c_skin2skin = .
 
 	if inlist(name, "Bangladesh2014"){
+	drop c_skin2skin
 	gen c_skin2skin = (s435ai  == 1) if   !inlist(s435ai,.,8) 
 	}
 	
@@ -104,70 +73,6 @@ order *,sequential  //make sure variables are in order.
 	*c_caesarean: Last birth in last 2 years delivered through caesarean                    
 	clonevar c_caesarean = m17
 	replace c_caesarean =. if m17==9
-	
-    *c_sba_eff1: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth)
-	/*
-	if inlist(name, "Armenia2010", "BurkinaFaso2010"){
-	gen stay = (inrange(m61,124,198)|inrange(m61,201,298)|inrange(m61,301,398))  
-	replace stay = . if mi(m61) | inlist(m61,199,299,998)
-	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
-	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	}
-	
-	if inlist(name, "Bangladesh2011"){
-	gen stay = (inrange(m61,201,224)|inrange(m61,301,309))  
-	replace stay = . if mi(m61) | inlist(m61,998,999)
-	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
-	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	}
-	
-	if inlist(name, "Bangladesh2014"){
-	gen stay = (inlist(m61,124) | inrange(m61,201,224)|inrange(m61,301,308))  
-	replace stay = . if mi(m61) | inlist(m61,998)
-	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
-	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	}	
-	
-	if inlist(name, "Benin2011"){
-	gen stay = (inrange(m61,124,188) | inrange(m61,201,290)|inrange(m61,301,312))  
-	replace stay = . if mi(m61) | inlist(m61,999)
-	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
-	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	}
-	
-	if inlist(name, "Comoros2012"){
-	gen stay = (inrange(m61,124,173) | inrange(m61,201,224)|inrange(m61,301,308))  
-	replace stay = . if mi(m61) | inlist(m61,999)
-	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
-	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	}
-	
-	if inlist(name, "Congorep2011"){
-	gen stay = (inlist(m61,124) | inrange(m61,201,230)|inrange(m61,301,312))  
-	replace stay = . if mi(m61) | inlist(m61,998,999)
-	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
-	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	}
-	
-    if inlist(name, "Burundi2010", "Cambodia2014", "Cameroon2011"){
-	gen stay=.
-	gen c_sba_eff1 =.
-	}
-	
-	if inlist(name, "Chad2014"){
-	gen stay = (inrange(m61,124,130) | inrange(m61,201,225)|inrange(m61,301,313))  
-	replace stay = . if mi(m61) | inlist(m61,998)
-	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
-	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	}
-	
-	if inlist(name, "Congodr2013"){
-	gen stay = (inrange(m61,124,160) | inrange(m61,201,260)|inrange(m61,301,312))  
-	replace stay = . if mi(m61) | inlist(m61,998)
-	gen c_sba_eff1 = (c_facdel == 1 & c_sba == 1 & stay == 1 & c_earlybreast == 1) 
-	replace c_sba_eff1 = . if c_facdel == . | c_sba == . | stay == . | c_earlybreast == . 
-	}
-	*/
 	
 	gen stay = 0 if m15 != .
 	replace stay = 1 if stay == 0 & (inrange(m61,124,198)|inrange(m61,201,298)|inrange(m61,301,398))
