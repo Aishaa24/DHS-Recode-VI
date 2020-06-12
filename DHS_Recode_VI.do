@@ -18,7 +18,7 @@ macro drop _all
 
 //NOTE FOR WINDOWS USERS : use "/" instead of "\" in your paths
 
-global root "C:\Users\wb536558\OneDrive - WBG\Documents\DHS\MEASURE UHC DATA"
+global root "C:\Users\wb\OneDrive - WBG\Documents\DHS\MEASURE UHC DATA"
 
 * Define path for data sources
 global SOURCE "${root}/RAW DATA/Recode VI"
@@ -39,8 +39,6 @@ do "${DO}/0_GLOBAL.do"
 foreach name in $DHScountries_Recode_VI{	
 
 tempfile birth ind men hm hiv hh iso 
-
-*local name "Congodr2013"
 
 ******************************
 *****domains using birth data*
@@ -208,6 +206,12 @@ gen name = "`name'"
 	if inlist(name,"Congodr2013") {
 	rename  surveyid  SurveyId
 	gen surveyname= "CD"
+	egen surveyid = concat(surveyname SurveyId )
+	}
+	
+	if inlist(name,"DominicanRepublic2013") {
+	rename  surveyid  SurveyId
+	gen surveyname= "DR"
 	egen surveyid = concat(surveyname SurveyId )
 	}
 	
