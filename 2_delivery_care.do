@@ -16,13 +16,77 @@ order *,sequential  //make sure variables are in order.
 	foreach var of varlist m3a-m3n {
 	local lab: variable label `var' 
     replace `var' = . if ///
-	!regexm("`lab'","trained") & (!regexm("`lab'","doctor|nurse|midwife|mifwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|auxiliary birth attendant|physician assistant|professional|ferdsher|feldshare|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant|general practitioner|matron") ///
+	!regexm("`lab'","trained") & (!regexm("`lab'","doctor|nurse|Assistance|midwife|mifwife|aide soignante|assistante accoucheuse|clinical officer|mch aide|auxiliary birth attendant|physician assistant|professional|ferdsher|feldshare|skilled|community health care provider|birth attendant|hospital/health center worker|hew|auxiliary|icds|feldsher|mch|vhw|village health team|health personnel|gynecolog(ist|y)|obstetrician|internist|pediatrician|family welfare visitor|medical assistant|health assistant|general practitioner|matron") ///
 	|regexm("`lab'","na^|-na|traditional birth attendant|untrained|unquallified|empirical midwife|box"))
 	replace `var' = . if !inlist(`var',0,1)
 	 }
 	/* do consider as skilled if contain words in 
 	   the first group but don't contain any words in the second group */
     egen sba_skill = rowtotal(m3a-m3n),mi
+	
+	if inlist(name, "Bangladesh2011", "Bangladesh2014", "Comoros2012"){
+	drop sba_skill
+	foreach var of varlist m3a-m3c{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3c m3d m3e m3f),mi
+	}
+
+	if inlist(name, "Benin2011", "Burundi2010"){
+	drop sba_skill
+	foreach var of varlist m3a-m3c{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3c),mi
+	}
+	
+	if inlist(name, "BurkinaFaso2010"){
+	drop sba_skill
+	foreach var of varlist m3a m3b m3c m3d m3e{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3c m3d m3e),mi
+	}
+	
+	if inlist(name,"Chad2014"){
+	drop sba_skill
+	foreach var of varlist m3a m3b m3c m3d{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3c),mi
+	}
+	
+	if inlist(name, "Congodr2013"){
+	drop sba_skill
+	foreach var of varlist m3a m3b m3c{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3c),mi
+	}
+	
+	if inlist(name, "Ethiopia2011"){
+	drop sba_skill
+	foreach var of varlist m3a m3b{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b),mi
+	}
+	
+	if inlist(name, "Gambia2013", "Guatemala2014"){
+	drop sba_skill
+	foreach var of varlist m3a m3b m3c{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3c),mi
+	}
+	
+	if inlist(name, "Guinea2012"){
+	drop sba_skill
+	foreach var of varlist m3a m3b m3c m3d{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3c m3d),mi
+	}
 	
 	*c_hospdel: child born in hospital of births in last 2 years  
 	decode m15, gen(m15_lab)
@@ -91,5 +155,6 @@ order *,sequential  //make sure variables are in order.
 	
 	*c_sba_eff2_q: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth, skin2skin contact) among those with any SBA
 	gen c_sba_eff2_q =  c_sba_eff2 if c_sba == 1
+
 
 	
