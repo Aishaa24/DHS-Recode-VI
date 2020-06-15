@@ -6,6 +6,7 @@
 		gen c_measles  =. 
 		replace c_measles = 1 if (h9 ==1 | h9 ==2 | h9 ==3)  
      	replace c_measles = 0 if h9 ==0  
+		replace c_measles = . if h9 ==8 | h9 ==9  
 	
 *c_dpt1	child	Child received DPT1/Pentavalent 1 vaccination	
         gen c_dpt1  = . 
@@ -43,7 +44,26 @@ if inlist(name,"Armenia2010"){
 		replace c_dpt3 = 1 if (h7==1 | h7==2 | h7==3|inrange(pen3,1,3)) 
 		replace c_dpt3 = 0 if h7==0 & pen3==0 
                     }
-					
+
+if inlist(name,"Benin2011"){
+*c_dpt1	child	Child received DPT1/Pentavalent 1 vaccination	
+        drop c_dpt1
+		gen c_dpt1 = .
+		replace c_dpt1 = 1 if (h3==1 | h3==2 | h3==3|inrange(spev1,1,3)) 
+		replace c_dpt1 = 0 if h3==0 & spev1==0 
+
+*c_dpt2	child			Child received DPT2/Pentavalent2 vaccination	
+        drop c_dpt2		
+		gen c_dpt2 = .
+		replace c_dpt2 = 1 if (h5==1 | h5==2 | h5==3|inrange(spev2,1,3)) 
+		replace c_dpt2 = 0 if h5==0 & spev2==0 
+		
+		drop c_dpt3
+		gen c_dpt3 = .
+		replace c_dpt3 = 1 if (h7==1 | h7==2 | h7==3|inrange(spev3,1,3)) 
+		replace c_dpt3 = 0 if h7==0 & spev3==0 
+                    }					
+									
 if inlist(name,"Congorep2011"){
 *c_dpt1	child	Child received DPT1/Pentavalent 1 vaccination	
         drop c_dpt1
@@ -103,18 +123,18 @@ if inlist(name,"DominicanRepublic2013"){
 *c_dpt1	child	Child received DPT1/Pentavalent 1 vaccination	
         drop c_dpt1
 		gen c_dpt1 = .
-		replace c_dpt1 = 1 if (h3==1 | h3==2 | h3==3|inrange(pt1,1,3)) 
+		replace c_dpt1 = 1 if (h3==1 | h3==2 | h3==3 |inrange(pt1,1,3)) 
 		replace c_dpt1 = 0 if h3==0 & pt1 ==0 
 
 *c_dpt2	child			Child received DPT2/Pentavalent2 vaccination	
         drop c_dpt2		
 		gen c_dpt2 = .
-		replace c_dpt2 = 1 if (h5==1 | h5==2 | h5==3|inrange(pt2,1,3)) 
+		replace c_dpt2 = 1 if (h5==1 | h3==2 | h5==3|inrange(pt2,1,3)) 
 		replace c_dpt2 = 0 if h5==0 & pt2==0 
 		
 		drop c_dpt3
 		gen c_dpt3 = .
-		replace c_dpt3 = 1 if (h7==1 | h7==2 | h7==3|inrange(pt3,1,3)) 
+		replace c_dpt3 = 1 if (h7==1 | h3==2 | h7==3|inrange(pt3,1,3)) 
 		replace c_dpt3 = 0 if h7==0 & pt3==0 
                     }										
 					
