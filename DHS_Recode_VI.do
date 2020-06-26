@@ -40,6 +40,7 @@ foreach name in $DHScountries_Recode_VI{
 
 tempfile birth ind men hm hiv hh iso 
 
+
 ******************************
 *****domains using birth data*
 ******************************
@@ -185,6 +186,7 @@ use `hm',clear
 gen surveyid = iso2c+year+"DHS"
 gen name = "`name'"
   
+  
 	if inlist(name,"BurkinaFaso2010") {
 	rename  surveyid  SurveyId
 	gen surveyname= "BF"
@@ -212,6 +214,26 @@ gen name = "`name'"
 	if inlist(name,"DominicanRepublic2013") {
 	rename  surveyid  SurveyId
 	gen surveyname= "DR"
+	egen surveyid = concat(surveyname SurveyId )
+	}
+	
+	if inlist(name,"Namibia2013") {
+	gen SurveyId=substr(surveyid,3,7)
+	gen surveyname= "NM"
+	rename surveyid survey_id
+	egen surveyid = concat(surveyname SurveyId )
+	}
+	
+	if inlist(name,"Niger2012") {
+	gen SurveyId=substr(surveyid,3,7)
+	gen surveyname= "NI"
+	rename surveyid survey_id
+	egen surveyid = concat(surveyname SurveyId )
+	}
+	
+	if inlist(name,"SierraLeone2013"){
+	rename  surveyid  SurveyId
+	gen surveyname= "SL"
 	egen surveyid = concat(surveyname SurveyId )
 	}
 	
