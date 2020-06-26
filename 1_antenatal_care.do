@@ -5,7 +5,6 @@
 rename *,lower
 order *,sequential
 
-
 	*c_anc: 4+ antenatal care visits of births in last 2 years	
 	*if ~inlist(name,"Armenia2010") {
 	clonevar cnumvisit=m14                   //Last pregnancies in last 2 years of women currently aged 15-49	
