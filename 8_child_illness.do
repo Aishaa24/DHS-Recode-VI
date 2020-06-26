@@ -91,7 +91,7 @@ order *,sequential  //make sure variables are in order.
 		recode h31b h31c h31 (8 9 =.)	
         gen c_ari = . 
 		replace c_ari= 1 if inlist(h31c,1,3) & ccough== 1 & h31b == 1	
-		replace c_ari= 0 if h31b==0 | ccough==0 kpjkl;t
+		replace c_ari= 0 if h31b==0 | ccough==0 
 		
 		/* Children under 5 with cough and rapid breathing in the 
 		two weeks preceding the survey which originated from the chest. */
