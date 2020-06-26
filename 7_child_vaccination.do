@@ -136,8 +136,66 @@ if inlist(name,"DominicanRepublic2013"){
 		gen c_dpt3 = .
 		replace c_dpt3 = 1 if (h7==1 | h3==2 | h7==3|inrange(pt3,1,3)) 
 		replace c_dpt3 = 0 if h7==0 & pt3==0 
-                    }										
+                    }	
 					
+if inlist(name,"Mali2012"){
+*c_dpt1	child	Child received DPT1/Pentavalent 1 vaccination	
+        drop c_dpt1
+		gen c_dpt1 = .
+		replace c_dpt1 = 1 if (h3==1 | h3==2 | h3==3 |inrange(vacp1,1,3)) 
+		replace c_dpt1 = 0 if h3==0 & vacp1 ==0 
+
+*c_dpt2	child			Child received DPT2/Pentavalent2 vaccination	
+        drop c_dpt2		
+		gen c_dpt2 = .
+		replace c_dpt2 = 1 if (h5==1 | h3==2 | h5==3|inrange(vacp2,1,3)) 
+		replace c_dpt2 = 0 if h5==0 & vacp2==0 
+		
+		drop c_dpt3
+		gen c_dpt3 = .
+		replace c_dpt3 = 1 if (h7==1 | h3==2 | h7==3|inrange(vacp3,1,3)) 
+		replace c_dpt3 = 0 if h7==0 & vacp3==0 
+                    }	
+
+		if inlist(name,"Rwanda2010"){
+*c_dpt1	child	Child received DPT1/Pentavalent 1 vaccination	
+        drop c_dpt1
+		gen c_dpt1 = .
+		replace c_dpt1 = 1 if (h3==1 | h3==2 | h3==3 |inrange(s506p1,1,3)) 
+		replace c_dpt1 = 0 if h3==0 & s506p1 ==0 
+
+*c_dpt2	child			Child received DPT2/Pentavalent2 vaccination	
+        drop c_dpt2		
+		gen c_dpt2 = .
+		replace c_dpt2 = 1 if (h5==1 | h3==2 | h5==3|inrange(s506p2,1,3)) 
+		replace c_dpt2 = 0 if h5==0 & s506p2==0 
+		
+		drop c_dpt3
+		gen c_dpt3 = .
+		replace c_dpt3 = 1 if (h7==1 | h3==2 | h7==3|inrange(s506p3,1,3)) 
+		replace c_dpt3 = 0 if h7==0 & s506p3==0 
+                    }
+	
+		if inlist(name,"Tajikistan2012"){
+*c_dpt1	child	Child received DPT1/Pentavalent 1 vaccination	
+        drop c_dpt1
+		gen c_dpt1 = .
+		replace c_dpt1 = 1 if (h3==1 | h3==2 | h3==3 |inrange(svt1,1,3)) 
+		replace c_dpt1 = 0 if h3==0 & svt1 ==0 
+
+*c_dpt2	child			Child received DPT2/Pentavalent2 vaccination	
+        drop c_dpt2		
+		gen c_dpt2 = .
+		replace c_dpt2 = 1 if (h5==1 | h3==2 | h5==3|inrange(svt2,1,3)) 
+		replace c_dpt2 = 0 if h5==0 & svt2==0 
+		
+		drop c_dpt3
+		gen c_dpt3 = .
+		replace c_dpt3 = 1 if (h7==1 | h3==2 | h7==3|inrange(svt3,1,3)) 
+		replace c_dpt3 = 0 if h7==0 & svt3==0 
+                    }
+				
+												
 *c_bcg	child			Child received BCG vaccination
 		gen c_bcg  = . 
 		replace c_bcg  = 1 if (h2 ==1 | h2 ==2 | h2 ==3)  
