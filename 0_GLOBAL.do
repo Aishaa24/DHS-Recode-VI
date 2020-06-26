@@ -70,12 +70,9 @@ global DHScountries_Recode_VI
  Guatemala2014        
  Guinea2012           
  Haiti2012            
- Honduras2011         
- India2015            
- Indonesia2012        
+ Honduras2011               
  Jordan2012           
- Kenya2014            
- KyrgyzRepublic2012   
+ Kenya2014              
  Lesotho2014          
  Liberia2013          
  Mali2012             
