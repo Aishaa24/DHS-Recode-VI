@@ -64,7 +64,7 @@ order *,sequential  //make sure variables are in order.
 	egen sba_skill = rowtotal(m3a m3b m3c),mi
 	}
 	
-	if inlist(name, "Ethiopia2011"){
+	if inlist(name, "Ethiopia2011", "Pakistan2012"){
 	drop sba_skill
 	foreach var of varlist m3a m3b{
 	replace `var' = . if !inlist(`var',0,1)	
@@ -72,7 +72,7 @@ order *,sequential  //make sure variables are in order.
 	egen sba_skill = rowtotal(m3a m3b),mi
 	}
 	
-	if inlist(name, "Gambia2013", "Guatemala2014"){
+	if inlist(name, "Gambia2013", "Guatemala2014","Haiti2012", "Honduras2011","Mozambique2011", "Nigeria2013", "Senegal2010","Senegal2012","Senegal2015"){
 	drop sba_skill
 	foreach var of varlist m3a m3b m3c{
 	replace `var' = . if !inlist(`var',0,1)	
@@ -87,6 +87,23 @@ order *,sequential  //make sure variables are in order.
 	}
 	egen sba_skill = rowtotal(m3a m3b m3c m3d),mi
 	}
+	
+	if inlist(name, "Mali2012"){
+	drop sba_skill
+	foreach var of varlist m3a m3b m3d{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3d),mi
+	}
+	
+	if inlist(name, "Niger2012"){
+	drop sba_skill
+	foreach var of varlist m3a m3b m3d{
+	replace `var' = . if !inlist(`var',0,1)	
+	}
+	egen sba_skill = rowtotal(m3a m3b m3d),mi
+	}
+	
 	
 	*c_hospdel: child born in hospital of births in last 2 years  
 	decode m15, gen(m15_lab)
@@ -155,6 +172,3 @@ order *,sequential  //make sure variables are in order.
 	
 	*c_sba_eff2_q: Effective delivery care (baby delivered in facility, by skilled provider, mother and child stay in facility for min. 24h, breastfeeding initiated in first 1h after birth, skin2skin contact) among those with any SBA
 	gen c_sba_eff2_q =  c_sba_eff2 if c_sba == 1
-
-
-	
